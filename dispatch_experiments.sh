@@ -13,8 +13,12 @@ while IFS= read -r line
 do
     ## reading each line
     echo "$line"
-#     python ./dummy_experiment.py --seed="$line" --gamma=0.997 --noise=0.7 "$1" & 
     python ./run_experiment.py --seed="$line" --gamma=0.997 --noise=0.7 "$1" & 
-    sleep 3 
+    
+    # sleep for random time so that writing to dictionary does not happen simultaneously
+    sleepytime=$((RANDOM % 10))
+#     echo $sleepytime
+    sleep $sleepytime
+    
 done < "$filename"
 
