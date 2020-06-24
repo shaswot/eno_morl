@@ -519,17 +519,33 @@ for env_location in env_location_list:
 # Save Test Results
 
 # Make all_test_results.npy file if doesn't exist
-if os.path.exists('./results/all_test_results.npy'):
-    test_results = np.load('./results/all_test_results.npy',allow_pickle='TRUE').item()
+
+file = './results/all_test_results.npy'
+WAIT_TIME = 5
+MAX_TRYS = 5
+no_of_tries = 0
+file_open_success = False
+    
+if os.path.exists(file):
+    while not file_open_success and no_of_tries<MAX_TRYS:
+        try:
+            results = np.load(file,allow_pickle='TRUE').item()
+            file_open_success = True
+        except:
+            file_open_success = False
+            time.sleep(WAIT_TIME)
+            no_of_tries += 1
+        else:
+            print(seed, ": File accessed")
+    if not file_open_success:
+         print(seed, ": File cannot be accessed")
 else:
-    test_results = {}
+    results = {}
 
-# Save results in file
-if exp_tag not in test_results:
-    test_results[exp_tag] = {}
-test_results[exp_tag][seed] = exp_test_log
-np.save('./results/all_test_results.npy', test_results)
-
+if exp_tag not in results:
+    results[exp_tag] = {}
+results[exp_tag][seed] = exp_train_log
+np.save(file, results)
 
 # In[20]:
 
