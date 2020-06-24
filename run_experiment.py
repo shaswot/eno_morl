@@ -564,7 +564,7 @@ else:
 # Save results in file
 if exp_tag not in results:
     results[exp_tag] = {}
-results[exp_tag][seed] = exp_train_log
+results[exp_tag][seed] = exp_test_log
 np.save(file, results)
 
 # In[20]:
