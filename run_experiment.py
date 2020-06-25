@@ -139,7 +139,7 @@ exp_tag = env_tag  + "-" + experiment
 
 # experiment+seed tag
 # tensorboard tag / model filename
-tag     = env_tag  + "-" + experiment +'-'+str(seed) 
+tag     = exp_tag + '-' + str(seed) 
 print("TensorBoard TAG: ",tag)
 
 cur_folder = os.getcwd()
