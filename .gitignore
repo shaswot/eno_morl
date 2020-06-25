@@ -17,6 +17,7 @@ runs/
 # Job logs
 /results
 /figures
+/logfiles
 # Archived folders
 /archived_notebooks
 /archived_scripts

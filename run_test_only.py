@@ -1,8 +1,7 @@
-# python ./run_test_only.py --seed=123 --gamma=0.997 --noise=0.7 csense & 
-
-
 #!/usr/bin/env python
 # coding: utf-8
+
+# python ./run_test_only.py --env=csense --gamma=0.997 --noise=0.7 --seed=123
 
 # In[1]:
 
@@ -12,6 +11,8 @@ import os.path
 import argparse
 
 import gym
+gym.logger.set_level(40) # remove gym warning about float32 bound box precision
+
 import numpy as np
 
 import torch
@@ -33,19 +34,20 @@ from common.rl_lib import ReplayBuffer, OUNoise, ENoise, ValueNetwork, PolicyNet
 
 # In[3]:
 parser = argparse.ArgumentParser()
-parser.add_argument("--seed", default=238, type=int, help="Set seed [default: 238]")
+parser.add_argument("--env", default="csense", type=str, help="Environment. Specified in ./common/env_lib.py")
 parser.add_argument("--gamma", default=0.996, type=float, help="Discount Factor")
 parser.add_argument("--noise", default=0.8, type=float, help="Action Noise")
-parser.add_argument("environment", help="Environment. Specified in ./common/env_lib.py")
+parser.add_argument("--seed", default=238, type=int, help="Set seed [default: 238]")
+
 
 args = parser.parse_args()
 
 
 # arguments
-seed      = args.seed         #
-env_name  = args.environment  #
-GAMMA     = args.gamma        # 
-max_noise = args.noise        #
+seed      = args.seed
+env_name  = args.env
+GAMMA     = args.gamma
+max_noise = args.noise
 
 
 # In[4]:
@@ -127,23 +129,50 @@ REQ_TYPE = "random"
 prediction_horizon = 10*timeslots_per_day
 henergy_mean= 0.13904705134356052 # 10yr hmean for tokyo
 
+# Tags
 env_tag = env_name + '_t' + str(timeslots_per_day) + '_' + REQ_TYPE
 model_tag = experiment +'-'+str(seed)
 
-exp_tag = env_tag  + "-" + experiment # key name in dictionary
-tag = env_tag + "-" + model_tag # tensorboard tag and name of model filename
+# experiment tag
+# name of folder to save models and results
+exp_tag = env_tag  + "-" + experiment 
+
+# experiment+seed tag
+# tensorboard tag / model filename
+tag     = env_tag  + "-" + experiment +'-'+str(seed) 
 print("TensorBoard TAG: ",tag)
-writer_folder = './runs/'+ env_name+"-"+experiment +"/" + tag
+
+cur_folder = os.getcwd()
+# Tensorboard Folder
+# writer_folder = './runs/'+ env_name+"-"+experiment +"/" + tag
+writer_folder = os.path.join(cur_folder, 'runs', exp_tag, tag )
 writer = SummaryWriter(log_dir=writer_folder)
 
+# Folder to save models
+model_folder = os.path.join(cur_folder,"models", exp_tag)
+if not os.path.exists(model_folder):
+    os.makedirs(model_folder) 
 
-episode = 0
-frame_idx = 0
-eval_states = None # will be populated with held-out states
+# Folder/file to save training results
+train_results_folder = os.path.join(cur_folder,"results", exp_tag, "train")
+if not os.path.exists(train_results_folder): 
+        os.makedirs(train_results_folder) 
+train_log_file = os.path.join(train_results_folder, tag + '-train.npy')    
 
-# evaluate Q-values of random states
-NO_OF_STATES_TO_EVALUATE = timeslots_per_day*20 # how many states to sample to evaluate
-EVAL_FREQ = prediction_horizon # how often to evaluate
+# Folder/file to save test results
+test_results_folder = os.path.join(cur_folder,"results", exp_tag, "test")
+if not os.path.exists(test_results_folder): 
+        os.makedirs(test_results_folder) 
+test_log_file = os.path.join(test_results_folder, tag + '-test.npy')    
+
+# # Start setup        
+# episode = 0
+# frame_idx = 0
+# eval_states = None # will be populated with held-out states
+
+# # evaluate Q-values of random states
+# NO_OF_STATES_TO_EVALUATE = timeslots_per_day*20 # how many states to sample to evaluate
+# EVAL_FREQ = prediction_horizon # how often to evaluate
 
 
 # # In[9]:
@@ -317,67 +346,44 @@ EVAL_FREQ = prediction_horizon # how often to evaluate
 # # In[11]:
 
 # ################################################################################
-# # Save Training Results
-
-# # Make all_train_results.npy file if doesn't exist
-# cur_folder = os.getcwd()
-# results_folder = os.path.join(cur_folder,"results")
-# if not os.path.exists(results_folder):
-#     os.makedirs(results_folder)
-
-
-# # In[12]:
-
-# # Save results in file
-# if os.path.exists('./results/all_train_results.npy'):
-#     train_results = np.load('./results/all_train_results.npy',allow_pickle='TRUE').item()
-# else:
-#     train_results = {}
-
-# if exp_tag not in train_results:
-#     train_results[exp_tag] = {}
-# train_results[exp_tag][seed] = exp_train_log
-# np.save('./results/all_train_results.npy', train_results)
+# # Save Training Results in file
+# np.save(train_log_file, exp_train_log)
 
 
 # # In[21]:
 
 # ################################################################################
-# # # display training performance metrics
-# # train_log = train_results[exp_tag][seed][env_location]
-
-# # print("YEAR".ljust(6), "HMEAN".ljust(8), "REQ_MEAN".ljust(8), "AVG_DC".ljust(8), 
-# #       "SNS_RWD".ljust(8), "ENP_RWD".ljust(8), "AVG_RWD".ljust(8), "DOWNTIMES".ljust(9))
-# # for year in list(train_log.keys()):
-# #     iteration_result =  train_log[year]
-# #     # Print summarized metrics
-# #     print(year, end=' ')
-# #     sense_avg_rwd = iteration_result['sense_reward_log'].mean()
-# #     enp_avg_rwd = iteration_result['enp_reward_log'].mean()
-# #     average_rwd = iteration_result['avg_rwd']
-# #     total_downtimes = iteration_result['downtimes']
-# #     hmean = iteration_result['avg_henergy']
-# #     reqmean = iteration_result['avg_req']
-# #     sense_dc_mean = iteration_result['sense_dc_log'].mean()
+# # display training performance metrics
+# train_log = exp_train_log[env_location]
+# print("\n\n***TRAINING PERFORMANCE****")
+# print("YEAR".ljust(6), "HMEAN".ljust(8), "REQ_MEAN".ljust(8), "AVG_DC".ljust(8), 
+#       "SNS_RWD".ljust(8), "ENP_RWD".ljust(8), "AVG_RWD".ljust(8), "DOWNTIMES".ljust(9))
+# for year in list(train_log.keys()):
+#     iteration_result =  train_log[year]
+#     # Print summarized metrics
+#     print(year, end=' ')
+#     sense_avg_rwd = iteration_result['sense_reward_log'].mean()
+#     enp_avg_rwd = iteration_result['enp_reward_log'].mean()
+#     average_rwd = iteration_result['avg_rwd']
+#     total_downtimes = iteration_result['downtimes']
+#     hmean = iteration_result['avg_henergy']
+#     reqmean = iteration_result['avg_req']
+#     sense_dc_mean = iteration_result['sense_dc_log'].mean()
     
-# #     print(f'{hmean:7.3f}',end='  ')
-# #     print(f'{reqmean:7.3f}',end='  ')
-# #     print(f'{sense_dc_mean:7.3f}',end='  ')
-# #     print(f'{sense_avg_rwd:7.3f}',end='  ')
-# #     print(f'{enp_avg_rwd:7.3f}',end='  ')
-# #     print(f'{average_rwd:7.3f}',end='  ')
-# #     print(f'{total_downtimes:5d}',end='  ')
-# #     print("")
+#     print(f'{hmean:7.3f}',end='  ')
+#     print(f'{reqmean:7.3f}',end='  ')
+#     print(f'{sense_dc_mean:7.3f}',end='  ')
+#     print(f'{sense_avg_rwd:7.3f}',end='  ')
+#     print(f'{enp_avg_rwd:7.3f}',end='  ')
+#     print(f'{average_rwd:7.3f}',end='  ')
+#     print(f'{total_downtimes:5d}',end='  ')
+#     print("")
 
 
 # # In[14]:
 
 # ################################################################################
 # # Save policy model weights with filename as tag
-# cur_folder = os.getcwd()
-# model_folder = os.path.join(cur_folder,"models")
-# if not os.path.exists(model_folder):
-#     os.makedirs(model_folder)
 # model_file = os.path.join(model_folder, (tag + "-policy.pt"))
 # torch.save(policy_net.state_dict(), model_file)
 
@@ -386,10 +392,6 @@ EVAL_FREQ = prediction_horizon # how often to evaluate
 
 # ################################################################################
 # # Save value model weights with filename as tag
-# cur_folder = os.getcwd()
-# model_folder = os.path.join(cur_folder,"models")
-# if not os.path.exists(model_folder):
-#     os.makedirs(model_folder)
 # model_file = os.path.join(model_folder, (tag + "-value.pt"))
 # torch.save(value_net.state_dict(), model_file)
 
@@ -412,8 +414,8 @@ ddpg_net = PolicyNetwork(state_dim, action_dim, hidden_dim, device).to(device)
 
 # Load model weights
 cur_folder = os.getcwd()
-model_folder = os.path.join(cur_folder,"models")
-model_file = os.path.join(model_folder, (tag + "-policy.pt"))
+model_folder = os.path.join(cur_folder,"models", exp_tag)
+model_file   = os.path.join(model_folder, (tag + "-policy.pt"))
 ddpg_net.load_state_dict(torch.load(model_file))
 ddpg_net.eval()
     
@@ -517,72 +519,42 @@ for env_location in env_location_list:
 # In[19]:
 ################################################################################
 # Save Test Results
-
-# Make all_test_results.npy file if doesn't exist
-
-file = './results/all_test_results.npy'
-WAIT_TIME = 5
-MAX_TRYS = 5
-no_of_tries = 0
-file_open_success = False
-    
-if os.path.exists(file):
-    while not file_open_success and no_of_tries<MAX_TRYS:
-        try:
-            results = np.load(file,allow_pickle='TRUE').item()
-            file_open_success = True
-        except:
-            file_open_success = False
-            time.sleep(WAIT_TIME)
-            no_of_tries += 1
-        else:
-            print(seed, ": File accessed")
-    if not file_open_success:
-         print(seed, ": File cannot be accessed")
-else:
-    results = {}
-
-if exp_tag not in results:
-    results[exp_tag] = {}
-results[exp_tag][seed] = exp_test_log
-np.save(file, results)
+np.save(test_log_file, exp_test_log)
 
 # In[20]:
-
 ################################################################################
-# # summarize metrics and display
-# experiment = exp_tag
-# print("Experiment:", experiment)
-# print("Model:", tag)
-# print("Seed:", seed)
+# summarize metrics and display
+print("\n\n***TEST RESULTS****")
+print("Tag:", tag)
+print("Seed:", seed)
 
 
-# print("LOCATION".ljust(12), "YEAR".ljust(6), "HMEAN".ljust(8), "REQ_MEAN".ljust(8), "AVG_DC".ljust(8), 
-#       "SNS_RWD".ljust(8), "ENP_RWD".ljust(8), "AVG_RWD".ljust(8), "DOWNTIMES".ljust(9))
+print("LOCATION".ljust(12), "YEAR".ljust(6), "HMEAN".ljust(8), "REQ_MEAN".ljust(8), "AVG_DC".ljust(8), 
+      "SNS_RWD".ljust(8), "ENP_RWD".ljust(8), "AVG_RWD".ljust(8), "DOWNTIMES".ljust(9))
 
-# exp_result = test_results[exp_tag][seed]
-# location_list = list(exp_result.keys())
-# for location in location_list:
-#     yr_list = list(exp_result[location].keys())
-#     for year in yr_list:
-#         run_log = exp_result[location][year]
-#         # Print summarized metrics
-#         print(location.ljust(12), year, end=' ')
-#         sense_avg_rwd = run_log['sense_reward_log'].mean()
-#         enp_avg_rwd = run_log['enp_reward_log'].mean()
+exp_result = exp_test_log
+location_list = list(exp_result.keys())
+for location in location_list:
+    yr_list = list(exp_result[location].keys())
+    for year in yr_list:
+        run_log = exp_result[location][year]
+        # Print summarized metrics
+        print(location.ljust(12), year, end=' ')
+        sense_avg_rwd = run_log['sense_reward_log'].mean()
+        enp_avg_rwd = run_log['enp_reward_log'].mean()
     
-#         average_rwd = run_log['avg_rwd']
-#         total_downtimes = run_log['downtimes']
-#         hmean = run_log['avg_henergy']
-#         reqmean = run_log['avg_req']
-#         sense_dc_mean = run_log['sense_dc_log'].mean()
+        average_rwd = run_log['avg_rwd']
+        total_downtimes = run_log['downtimes']
+        hmean = run_log['avg_henergy']
+        reqmean = run_log['avg_req']
+        sense_dc_mean = run_log['sense_dc_log'].mean()
 
-#         print(f'{hmean:7.3f}',end='  ')
-#         print(f'{reqmean:7.3f}',end='  ')
-#         print(f'{sense_dc_mean:7.3f}',end='  ')
-#         print(f'{sense_avg_rwd:7.3f}',end='  ')
-#         print(f'{enp_avg_rwd:7.3f}',end='  ')
-#         print(f'{average_rwd:7.3f}',end='  ')
-#         print(f'{total_downtimes:5d}',end='  ')
-#         print("")
+        print(f'{hmean:7.3f}',end='  ')
+        print(f'{reqmean:7.3f}',end='  ')
+        print(f'{sense_dc_mean:7.3f}',end='  ')
+        print(f'{sense_avg_rwd:7.3f}',end='  ')
+        print(f'{enp_avg_rwd:7.3f}',end='  ')
+        print(f'{average_rwd:7.3f}',end='  ')
+        print(f'{total_downtimes:5d}',end='  ')
+        print("")
 
