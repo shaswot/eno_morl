@@ -330,8 +330,8 @@ if not os.path.exists(results_folder):
 
 # Save Training Results
 file = './results/all_train_results.npy'
-WAIT_TIME = 5
-MAX_TRYS = 5
+WAIT_TIME = 15
+MAX_TRYS = 15
 no_of_tries = 0
 file_open_success = False
 
@@ -538,8 +538,8 @@ for env_location in env_location_list:
 ################################################################################
 # Save Test Results
 file = './results/all_test_results.npy'
-WAIT_TIME = 5
-MAX_TRYS = 5
+WAIT_TIME = 15
+MAX_TRYS = 15
 no_of_tries = 0
 file_open_success = False
 

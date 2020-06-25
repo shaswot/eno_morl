@@ -13,7 +13,7 @@ while IFS= read -r line
 do
     ## reading each line
     echo "$line"
-    python ./run_experiment.py --seed="$line" --gamma=0.997 --noise=0.7 "$1" && >> scriptlog.dat
+    python ./run_experiment.py --seed="$line" --gamma=0.997 --noise=0.3 "$1" & >> scriptlog.dat
     
 done < "$filename"
 
