@@ -12,10 +12,15 @@ seed_filename=$2
 echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
-    ## reading each line
+    # Naive-heuristics
     log_filename=$1-naive-$line
-    echo "$log_filename"
     python ./naive_heuristics.py --env="$1" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+
+#     # K-heuristics
+#     log_filename=$1-k-$line
+#     python ./k_heuristics.py --env="$1" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    
+    echo "$log_filename"
 
 #    
 # 2>&1: Redirect stderr to "where stdout is currently going". 
