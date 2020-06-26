@@ -305,9 +305,6 @@ class cenpv2(csense):
 ########################################################
 class cenpsense(csense):
     
-    def set_pref(self,preference):
-        self.preference = preference
-    
     def reward(self,action): # reward based on utility
             if action < 0:
                 sense_reward = 0
@@ -335,9 +332,6 @@ class cenpsense(csense):
 ########################################################
 class cenpv2sense(csense):
     
-    def set_pref(self,preference):
-        self.preference = preference
-    
     def reward(self,action): # reward based on utility
             if action < 0:
                 sense_reward = 0
@@ -363,6 +357,7 @@ class cenpv2sense(csense):
 ########################################################
 # End of cenpv2sense()
 ########################################################
+
 class rsense(csense):
     #action = (0,1) --> sense_dc = (0.1,0.5)
     def action2sensedc(self,action):
@@ -452,6 +447,62 @@ class renpv2(rsense):
 ########################################################
 # End of renp()
 ########################################################
+class renpsense(rsense):
+    
+    def reward(self,action): # reward based on utility
+            if action < 0:
+                sense_reward = 0
+                enp_reward = 0
+                reward = 0
+
+            else:
+                sense_dc = self.action2sensedc(action)
+                sense_reward = min(1.0,sense_dc/self.req_obs)
+
+                batt_threshold = 0.8
+                if self.menergy_obs > batt_threshold:
+                    enp_reward = 1
+                else:
+                    enp_reward = (self.menergy_obs - self.MIN_BATT)/(batt_threshold-self.MIN_BATT)
+
+            reward = self.preference*sense_reward + (1-self.preference)*enp_reward
+            self.sense_reward_log.append(sense_reward)
+            self.enp_reward_log.append(enp_reward)
+            return reward
+########################################################
+# End of renpsense()
+########################################################
+class renpv2sense(rsense):
+    
+    def reward(self,action): # reward based on utility
+            if action < 0:
+                sense_reward = 0
+                enp_reward = 0
+                reward = 0
+
+            else:
+                sense_dc = self.action2sensedc(action)
+                sense_reward = min(1.0,sense_dc/self.req_obs)
+
+                batt_threshold = 0.8
+                BRWD = 0.85
+                BMAX = 1.0
+                if self.menergy_obs > batt_threshold:
+                    enp_reward = (self.menergy_obs - BMAX)*(1-BRWD)/(batt_threshold-BMAX)
+                else:
+                    enp_reward = (self.menergy_obs - self.MIN_BATT)/(batt_threshold-self.MIN_BATT)
+
+            reward = self.preference*sense_reward + (1-self.preference)*enp_reward
+            self.sense_reward_log.append(sense_reward)
+            self.enp_reward_log.append(enp_reward)
+            return reward
+########################################################
+# End of renpv2sense()
+########################################################
+
+
+
+
 # ######################################################### 
 # class tx(gym.Env):
 #     """An ambient environment simulator for OpenAI gym."""
