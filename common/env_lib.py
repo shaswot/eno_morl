@@ -21,6 +21,9 @@ class csense(gym.Env):
                                             high=1, 
                                             shape=(6,))
 ########################################################
+    def set_pref(self,preference):
+        self.preference = preference
+########################################################
 
     def set_env(self,location, year, timeslots_per_day, req_type, offset, p_horizon, hmean=None):
         self.location = location
