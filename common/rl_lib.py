@@ -114,7 +114,7 @@ class PolicyNetwork(nn.Module):
 ################################################################################
 class small_ValueNetwork(nn.Module):
     def __init__(self, num_inputs, num_actions, hidden_size, device, init_w=3e-3):
-        super(ValueNetwork, self).__init__()
+        super(small_ValueNetwork, self).__init__()
         
         self.linear1 = nn.Linear(num_inputs + num_actions, hidden_size)
 #         self.linear2 = nn.Linear(hidden_size, hidden_size)
@@ -132,7 +132,7 @@ class small_ValueNetwork(nn.Module):
 ################################################################################
 class small_PolicyNetwork(nn.Module):
     def __init__(self, num_inputs, num_actions, hidden_size, device, init_w=3e-3):
-        super(PolicyNetwork, self).__init__()
+        super(small_PolicyNetwork, self).__init__()
         
         self.linear1 = nn.Linear(num_inputs, hidden_size)
 #         self.linear2 = nn.Linear(hidden_size, hidden_size)

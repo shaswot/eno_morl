@@ -413,7 +413,7 @@ state_dim  = env.observation_space.shape[0]
 action_dim = env.action_space.shape[0]
 
 # Make model
-ddpg_net = PolicyNetwork(state_dim, action_dim, hidden_dim, device).to(device)
+ddpg_net = small_PolicyNetwork(state_dim, action_dim, hidden_dim, device).to(device)
 
 # Load model weights
 cur_folder = os.getcwd()
