@@ -2,8 +2,8 @@
 
 ## USAGE
 ## Run each experiment with seeds specified seedfile
-# ./dispatch_experiments.sh <environment> <gamma> <noise> <seed_file>
-# ./dispatch_experiments.sh rsense 0.997 0.7 seedlist.dat
+# ./dispatch_sorl_experiments.sh <environment> <gamma> <noise> <seed_file>
+# ./dispatch_sorl_experiments.sh rsense 0.997 0.7 seedlist.dat
 
 env=$1
 gamma=$2
@@ -17,7 +17,7 @@ do
     ## reading each line
     log_filename=$1-g$2-n$3-$line
     echo "$log_filename"
-    python ./run_experiment.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    python ./sorl.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
 #    
 # 2>&1: Redirect stderr to "where stdout is currently going". 

@@ -2,8 +2,8 @@
 
 ## USAGE
 ## Run each experiment with seeds specified seedfile
-# ./dispatch_heuristics.sh <environment> <seed_file>
-# ./dispatch_experiments.sh csense seedlist.dat
+# ./dispatch_heuristics_experiments.sh <environment> <seed_file>
+# ./dispatch_heuristics_experiments.sh csense seedlist.dat
 
 env=$1
 seed_filename=$2
