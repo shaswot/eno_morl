@@ -126,7 +126,7 @@ exp_train_log[env_location] = {}
 
 
 START_YEAR = 1995
-NO_OF_YEARS = 2
+NO_OF_YEARS = 10
 timeslots_per_day = 24
 REQ_TYPE = "random"
 prediction_horizon = 10*timeslots_per_day
@@ -426,7 +426,7 @@ ddpg_net.eval()
 # Setup environment
 env_location_list = ['tokyo']#['tokyo','wakkanai','minamidaito']
 START_YEAR = 1995
-NO_OF_YEARS = 3
+NO_OF_YEARS = 24
 # timeslots_per_day = 24
 # REQ_TYPE = "random"
 # prediction_horizon = 10*timeslots_per_day
