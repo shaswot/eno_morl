@@ -16,7 +16,7 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1-g$2-n$3-$line
+    log_filename=$1-smallv6-g$2-n$3-$line
     echo "$log_filename"
     python ./small_sorl.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
