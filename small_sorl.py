@@ -86,14 +86,14 @@ env = eval("common.env_lib."+env_name+"()")
 
 state_dim  = env.observation_space.shape[0]
 action_dim = env.action_space.shape[0]
-hidden_dim = 128
+hidden_dim = 64
 
 value_lr  = 1e-3
 policy_lr = 1e-4
 
 SOFT_TAU=1e-2
 
-batch_size  = 64
+batch_size  = 128
 replay_buffer_size = 1000000
 replay_buffer = ReplayBuffer(replay_buffer_size)
 
