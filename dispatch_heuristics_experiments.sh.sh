@@ -4,6 +4,7 @@
 ## Run each experiment with seeds specified seedfile
 # ./dispatch_heuristics_experiments.sh <environment> <seed_file>
 # ./dispatch_heuristics_experiments.sh csense seedlist.dat
+mkdir -p logfiles
 
 env=$1
 seed_filename=$2

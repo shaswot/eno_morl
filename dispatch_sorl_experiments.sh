@@ -4,6 +4,7 @@
 ## Run each experiment with seeds specified seedfile
 # ./dispatch_sorl_experiments.sh <environment> <gamma> <noise> <seed_file>
 # ./dispatch_sorl_experiments.sh rsense 0.997 0.7 seedlist.dat
+mkdir -p logfiles
 
 env=$1
 gamma=$2
