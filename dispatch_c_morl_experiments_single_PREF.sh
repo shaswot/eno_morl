@@ -3,7 +3,7 @@
 ## USAGE
 ## Run each experiment with seeds specified seedfile
 # ./dispatch_c_morl_experiments_single_PREF.sh <environment> <gamma> <noise> <pref> <seed_file>
-# ./dispatch_c_morl_experiments_single_PREF.sh cenp 0.997 0.7 seedlist.dat
+# ./dispatch_c_morl_experiments_single_PREF.sh cenp 0.997 0.7 0.5 seedlist.dat
 mkdir -p logfiles
 
 env=$1
