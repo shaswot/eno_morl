@@ -2,8 +2,8 @@
 
 ## USAGE
 ## Run each experiment with seeds specified seedfile
-# ./dispatch_small_sorl_experiments.sh <environment> <gamma> <noise> <seed_file>
-# ./dispatch_small_sorl_experiments.sh rsense 0.997 0.7 seedlist.dat
+# ./dispatch_non_markov_sorl_experiments.sh <environment> <gamma> <noise> <seed_file>
+# ./dispatch_non_markov_sorl_experiments.sh rsense 0.997 0.7 seedlist.dat
 mkdir -p logfiles
 
 env=$1
@@ -16,9 +16,9 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1-nonmarkov-g$2-n$3-$line
+    log_filename=$1-non_markov-g$2-n$3-$line
     echo "$log_filename"
-    python ./nonmarkov_sorl.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    python ./non_markov_sorl.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
 #    
 # 2>&1: Redirect stderr to "where stdout is currently going". 
