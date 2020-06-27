@@ -77,7 +77,7 @@ device   = torch.device("cuda" if use_cuda else "cpu")
 # In[6]:
 ################################################################################
 # Setting up environment base
-experiment = "small_g"+str(GAMMA)+"-n"+str(max_noise)
+experiment = "smallv6_g"+str(GAMMA)+"-n"+str(max_noise)
 # env_name = "csense"
 env = eval("common.env_lib."+env_name+"()")
 
@@ -86,14 +86,14 @@ env = eval("common.env_lib."+env_name+"()")
 
 state_dim  = env.observation_space.shape[0]
 action_dim = env.action_space.shape[0]
-hidden_dim = 32
+hidden_dim = 128
 
 value_lr  = 1e-3
 policy_lr = 1e-4
 
 SOFT_TAU=1e-2
 
-batch_size  = 32
+batch_size  = 64
 replay_buffer_size = 1000000
 replay_buffer = ReplayBuffer(replay_buffer_size)
 
