@@ -19,5 +19,5 @@ do
     ## reading each line
     log_filename=$1sense-g$2-n$3-p$4-$line
     echo "$log_filename"
-    python ./c_morl.py --env="$1" --gamma="$2" --noise="$3" --pref="$4" --seed="$line"  >> logfiles/"$log_filename" 2>&1   
+    python ./c_morl.py --env="$1" --gamma="$2" --noise="$3" --pref="$4" --seed="$line"  >> logfiles/"$log_filename" 2>&1 ;  
 done < "$seed_filename"
