@@ -384,7 +384,34 @@ class cenpxsense(csense):
 ########################################################
 # End of cenpsense()
 ########################################################        
-        
+class cenpv2xsense(csense):
+    
+    def reward(self,action): # reward based on utility
+            if action < 0:
+                sense_reward = 0
+                enp_reward = 0
+                reward = 0
+
+            else:
+                sense_dc = self.action2sensedc(action)
+                sense_reward = min(1.0,sense_dc/self.req_obs)
+
+                batt_threshold = 0.8
+                BRWD = 0.85
+                BMAX = 1.0
+                if self.menergy_obs > batt_threshold:
+                    enp_reward = (self.menergy_obs - BMAX)*(1-BRWD)/(batt_threshold-BMAX)
+                else:
+                    enp_reward = (self.menergy_obs - self.MIN_BATT)/(batt_threshold-self.MIN_BATT)
+
+
+            reward = sense_reward * enp_reward
+            self.sense_reward_log.append(sense_reward)
+            self.enp_reward_log.append(enp_reward)
+            return reward
+########################################################
+# End of cenpsense()
+########################################################
 class rsense(csense):
     #action = (0,1) --> sense_dc = (0.1,0.5)
     def action2sensedc(self,action):
