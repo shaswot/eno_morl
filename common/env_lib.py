@@ -377,7 +377,7 @@ class cenpxsense(csense):
                 else:
                     enp_reward = (self.menergy_obs - self.MIN_BATT)/(batt_threshold-self.MIN_BATT)
 
-            reward = sense_reward * enp_reward *10
+            reward = sense_reward * enp_reward
             self.sense_reward_log.append(sense_reward)
             self.enp_reward_log.append(enp_reward)
             return reward
