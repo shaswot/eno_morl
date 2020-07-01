@@ -183,7 +183,8 @@ def ddpg_update(value_net,
 
     policy_loss = value_net(state, policy_net(state))
     policy_loss = -policy_loss.mean()
-    writer.add_scalar("Loss/policy_loss", -policy_loss, frame_idx)
+    if writer is not None:
+        writer.add_scalar("Loss/policy_loss", -policy_loss, frame_idx)
    
     next_action    = target_policy_net(next_state)
     target_value   = target_value_net(next_state, next_action.detach())
@@ -192,7 +193,8 @@ def ddpg_update(value_net,
 
     value = value_net(state, action)
     value_loss = value_criterion(value, expected_value.detach())
-    writer.add_scalar("Loss/value_loss", value_loss, frame_idx)
+    if writer is not None:
+        writer.add_scalar("Loss/value_loss", value_loss, frame_idx)
 
 
     policy_optimizer.zero_grad()
@@ -205,8 +207,9 @@ def ddpg_update(value_net,
         for n, p in policy_net.named_parameters():
             policy_avg_grad.append(p.grad.abs().mean().item())
             policy_max_grad.append(p.grad.abs().max().item())
-    writer.add_scalar("Grad/policy_gmean", np.mean(policy_avg_grad),frame_idx)
-    writer.add_scalar("Grad/policy_gmax",  np.max(policy_max_grad),frame_idx)
+    if writer is not None:
+        writer.add_scalar("Grad/policy_gmean", np.mean(policy_avg_grad),frame_idx)
+        writer.add_scalar("Grad/policy_gmax",  np.max(policy_max_grad),frame_idx)
     policy_optimizer.step()
 
     value_optimizer.zero_grad()
@@ -219,8 +222,9 @@ def ddpg_update(value_net,
         for n, p in value_net.named_parameters():
             value_avg_grad.append(p.grad.abs().mean().item())
             value_max_grad.append(p.grad.abs().max().item())
-    writer.add_scalar("Grad/value_gmean", np.mean(value_avg_grad),frame_idx)
-    writer.add_scalar("Grad/value_gmax",  np.max(value_max_grad),frame_idx)
+    if writer is not None:
+        writer.add_scalar("Grad/value_gmean", np.mean(value_avg_grad),frame_idx)
+        writer.add_scalar("Grad/value_gmax",  np.max(value_max_grad),frame_idx)
     value_optimizer.step()
 
     for target_param, param in zip(target_value_net.parameters(), value_net.parameters()):
