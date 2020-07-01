@@ -1,8 +1,0 @@
-  File "./pivector.py", line 475
-    print(year,end=' ')
-                  ^
-SyntaxError: invalid syntax
-  File "./pivector.py", line 485
-    print(f'{hmean:7.3f}',end='  ')
-                        ^
-SyntaxError: invalid syntax
