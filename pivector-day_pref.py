@@ -666,6 +666,9 @@ for env_location in env_location_list:
     #         print("Year:\t", year)            
             exp_test_log[env_location][year][pref] = iteration_result
 #     print("")
+################################################################################
+# Save Test Results
+np.save(test_log_file, exp_test_log)
 
 # summarize metrics and display
 print("\n\n***TEST RESULTS****")
