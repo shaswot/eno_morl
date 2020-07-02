@@ -16,11 +16,12 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1-pivector_random_pref-g$2-n$3-$line
+    log_filename=$1-pivector_constant_pref2-g$2-n$3-$line
     echo "$log_filename"
 #     python ./pivector.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
-    python ./pivector-random_pref.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+#     python ./pivector-random_pref.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 #     python ./pivector-day_pref.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    python ./pivector-constant_pref.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
 done < "$seed_filename"
 
