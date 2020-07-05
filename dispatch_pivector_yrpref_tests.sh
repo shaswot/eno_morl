@@ -13,7 +13,7 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1-pivector_yr_pref-$line
+    log_filename=$line-pivector_yr_pref
     echo "$log_filename"
     python ./running_yrpref_pivector.py --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
