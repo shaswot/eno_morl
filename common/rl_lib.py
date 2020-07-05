@@ -5,7 +5,26 @@ import torch.nn.functional as F
 from torch.distributions import Normal
 import numpy as np
 import random
-
+class off_ReplayBuffer:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = []
+        self.position = 0
+    
+    def push(self, state, action, reward, next_state, done, pref):
+        if len(self.buffer) < self.capacity:
+            self.buffer.append(None)
+        self.buffer[self.position] = (state, action, reward, next_state, done, pref)
+        self.position = (self.position + 1) % self.capacity
+    
+    def sample(self, batch_size):
+        batch = random.sample(self.buffer, batch_size)
+        state, action, reward, next_state, done, pref = map(np.stack, zip(*batch))
+        return state, action, reward, next_state, done, pref
+    
+    def __len__(self):
+        return len(self.buffer)
+################################################################################
 class ReplayBuffer:
     def __init__(self, capacity):
         self.capacity = capacity
@@ -225,6 +244,91 @@ def ddpg_update(value_net,
     if writer is not None:
         writer.add_scalar("Grad/value_gmean", np.mean(value_avg_grad),frame_idx)
         writer.add_scalar("Grad/value_gmax",  np.max(value_max_grad),frame_idx)
+    value_optimizer.step()
+
+    for target_param, param in zip(target_value_net.parameters(), value_net.parameters()):
+            target_param.data.copy_(
+                target_param.data * (1.0 - soft_tau) + param.data * soft_tau
+            )
+
+    for target_param, param in zip(target_policy_net.parameters(), policy_net.parameters()):
+            target_param.data.copy_(
+                target_param.data * (1.0 - soft_tau) + param.data * soft_tau
+            )
+################################################################################
+def nn_update(netname,
+                batch,
+                value_net,
+                target_value_net,
+                policy_net,
+                target_policy_net,
+                value_optimizer,
+                policy_optimizer,
+                value_criterion,
+                device,
+                writer=None,
+                frame_idx=None,
+                gamma=0.99,
+                min_value=-np.inf,
+                max_value=np.inf,
+                soft_tau=1e-2,
+                policy_clipgrad=None,
+                value_clipgrad=None):
+    
+    state, action, reward, next_state, done, pref = batch
+    
+    batch_size = len(reward)
+    
+    state      = torch.FloatTensor(state).to(device)
+    next_state = torch.FloatTensor(next_state).to(device)
+    action     = torch.FloatTensor(action).unsqueeze(1).to(device)
+    reward     = torch.FloatTensor(reward).unsqueeze(1).to(device)
+    done       = torch.FloatTensor(np.float32(done)).unsqueeze(1).to(device)
+    pref       = torch.FloatTensor(pref).unsqueeze(1).to(device)
+
+
+    policy_loss = value_net(state, policy_net(state))
+    policy_loss = -policy_loss.mean()
+    if writer is not None:
+        writer.add_scalar("Loss/"+netname+"_policy_loss", -policy_loss, frame_idx)
+   
+    next_action    = target_policy_net(next_state)
+    target_value   = target_value_net(next_state, next_action.detach())
+    expected_value = reward.view(batch_size,-1) + (1.0 - done) * gamma * target_value * pref
+    expected_value = torch.clamp(expected_value, min_value, max_value)
+
+    value = value_net(state, action)
+    value_loss = value_criterion(value, expected_value.detach())
+    if writer is not None:
+        writer.add_scalar("Loss/"+netname+"_value_loss", value_loss, frame_idx)
+    policy_optimizer.zero_grad()
+    policy_loss.backward()
+    if policy_clipgrad is not None:
+        torch.nn.utils.clip_grad_norm_(policy_net.parameters(), max_norm=policy_clipgrad)
+    policy_avg_grad=[]
+    policy_max_grad=[]
+    with torch.no_grad():
+        for n, p in policy_net.named_parameters():
+            policy_avg_grad.append(p.grad.abs().mean().item())
+            policy_max_grad.append(p.grad.abs().max().item())
+    if writer is not None:
+        writer.add_scalar("Grad/"+netname+"_policy_gmean", np.mean(policy_avg_grad),frame_idx)
+        writer.add_scalar("Grad/"+netname+"_policy_gmax",  np.max(policy_max_grad),frame_idx)
+    policy_optimizer.step()
+
+    value_optimizer.zero_grad()
+    value_loss.backward()
+    if value_clipgrad is not None:
+        torch.nn.utils.clip_grad_norm_(value_net.parameters(), max_norm=value_clipgrad)
+    value_avg_grad=[]
+    value_max_grad=[]
+    with torch.no_grad():
+        for n, p in value_net.named_parameters():
+            value_avg_grad.append(p.grad.abs().mean().item())
+            value_max_grad.append(p.grad.abs().max().item())
+    if writer is not None:
+        writer.add_scalar("Grad/"+netname+"_value_gmean", np.mean(value_avg_grad),frame_idx)
+        writer.add_scalar("Grad/"+netname+"_value_gmax",  np.max(value_max_grad),frame_idx)
     value_optimizer.step()
 
     for target_param, param in zip(target_value_net.parameters(), value_net.parameters()):
