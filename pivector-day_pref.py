@@ -545,7 +545,7 @@ for env_location in env_location_list:
         for pref in [0.2, 0.5, 0.8]:
 #             print("\n\nPreference: ", pref)
             exp_test_log[env_location][year][pref]={}
-
+            env.set_pref(pref)
             env.set_env(env_location,year, timeslots_per_day, 
                         REQ_TYPE, offset=timeslots_per_day/2,
                         p_horizon=prediction_horizon,
