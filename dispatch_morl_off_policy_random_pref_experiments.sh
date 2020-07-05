@@ -16,9 +16,9 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1-morl_off_policy_random_pref-g$2-n$3-$line
+    log_filename=$1-morl_off_policy_random_pref_diff_gamma-g$2-n$3-$line
     echo "$log_filename"
-    python ./morl_off_policy_random_pref.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    python ./morl_off_policy_random_pref_diff_gamma.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
 done < "$seed_filename"
 
