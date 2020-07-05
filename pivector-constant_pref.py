@@ -107,7 +107,7 @@ class morlWrapper(gym.RewardWrapper):
             return (sense_reward, enp_reward)
 ################################################################################
 # Setting up environment base
-experiment = "pimorl_g" + str(GAMMA) + "-n" + str(max_noise) + "-c_pref2" + "-intrp" + str(intrp_no)
+experiment = "pimorl_g" + str(GAMMA) + "-n" + str(max_noise) + "-c_pref8" + "-intrp" + str(intrp_no)
 env = eval("common.env_lib." + env_name + "()")
 env = morlWrapper(env)
 
@@ -232,7 +232,7 @@ for year in range(START_YEAR, START_YEAR+NO_OF_YEARS):
     counter = 0 # record of number of steps in the environment. Required to keep a finite episode length
 
     while not done:
-        pref = 0.2
+        pref = 0.8
         env.set_pref(pref)
         writer.add_scalar("Final/Preference", pref, frame_idx)
         if env.RECOVERY_MODE:
