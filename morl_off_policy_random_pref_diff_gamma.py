@@ -109,7 +109,7 @@ class morlWrapper(gym.RewardWrapper):
             return (sense_reward, enp_reward)
 ################################################################################
 # Setting up environment base
-experiment = "off_policy_diffg" + str(GAMMA) + "-n" + str(max_noise) + "-random_pref" + "-intrp" + str(intrp_no)
+experiment = "off_policy_diff2g" + str(GAMMA) + "-n" + str(max_noise) + "-random_pref" + "-intrp" + str(intrp_no)
 env = eval("common.env_lib." + env_name + "()")
 env = morlWrapper(env)
 
@@ -336,7 +336,7 @@ for year in range(START_YEAR, START_YEAR+NO_OF_YEARS):
                 nn_update("enp", enp_batch,
                           enp_value_net, target_enp_value_net, enp_policy_net, target_enp_policy_net,
                           enp_value_optimizer, enp_policy_optimizer, value_criterion, device, writer, frame_idx,
-                          gamma=GAMMA+0.001,
+                          gamma=GAMMA+0.002,
                           min_value=-np.inf, max_value=np.inf,
                           soft_tau=1e-2,
                           policy_clipgrad=0.5, value_clipgrad=0.5)
@@ -515,7 +515,7 @@ for env_location in env_location_list:
             state = env.reset()
             reward_rec = []
 
-            intrp_dc_rec = []
+            intrp_actions_rec = []
             intrp_sense_value_rec = []
             intrp_enp_value_rec = []
             intrp_final_value_rec = []
@@ -546,6 +546,7 @@ for env_location in env_location_list:
                     intrp_actions = np.linspace(start=min(raw_sense_action,raw_enp_action), 
                                                 stop=max(raw_sense_action,raw_enp_action), 
                                                 num=intrp_no)
+                    intrp_actions_rec.append(intrp_actions)
 
                     # Convert intrp_actions to action
                     intrp_action_tensor = torch.FloatTensor(intrp_actions).unsqueeze(1).to(device)
@@ -554,10 +555,12 @@ for env_location in env_location_list:
                     # Get the q-values from sense and enp models for the intrp_actions
                     intrp_sense_value = sense_qnet(batch_state_tensor, intrp_action_tensor).cpu().detach().numpy().squeeze()
                     intrp_enp_value = enp_qnet(batch_state_tensor, intrp_action_tensor).cpu().detach().numpy().squeeze()
-
+                    intrp_sense_value_rec.append(intrp_sense_value)
+                    intrp_enp_value_rec.append(intrp_enp_value)
                     # Calculate the node utility for all intrp_actions
                     final_value = pref*intrp_sense_value + (1-pref)*intrp_enp_value
-
+                    intrp_final_value_rec.append(final_value)
+                    
                     # final_action is the action with the maximum final_value
                     final_raw_action = intrp_actions[final_value.argmax()]
                     tr_action = (final_raw_action*0.5 + 0.5)
@@ -583,7 +586,7 @@ for env_location in env_location_list:
             iteration_result['sense_reward_log'] = np.array(env.sense_reward_log)
             iteration_result['enp_reward_log'] = np.array(env.enp_reward_log)
 
-            iteration_result['intrp_dc_rec'] = intrp_dc_rec
+            iteration_result['intrp_actions_rec'] = intrp_actions_rec
             iteration_result['intrp_sense_value_rec'] = intrp_sense_value_rec
             iteration_result['intrp_enp_value_rec'] = intrp_enp_value_rec
             iteration_result['intrp_final_value_rec'] = intrp_final_value_rec
