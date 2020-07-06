@@ -109,7 +109,7 @@ class morlWrapper(gym.RewardWrapper):
             return (sense_reward, enp_reward)
 ################################################################################
 # Setting up environment base
-experiment = "off_policy_g" + str(GAMMA) + "-n" + str(max_noise) + "-random_pref" + "-intrp" + str(intrp_no)
+experiment = "off_policy_diffg" + str(GAMMA) + "-n" + str(max_noise) + "-random_pref" + "-intrp" + str(intrp_no)
 env = eval("common.env_lib." + env_name + "()")
 env = morlWrapper(env)
 
