@@ -109,7 +109,7 @@ sense_qmodel_file = os.path.join(model_folder, sense_model_folder, (sense_model_
 
 ################################################################################
 # Setting up runtime environment base
-experiment = "morl_runtime_g" + str(GAMMA) + "-n" + str(max_noise) + "-p" + str(pref)
+experiment = "morl_runtimev2_g" + str(GAMMA) + "-n" + str(max_noise) + "-p" + str(pref)
 #env: cenp -> cenpsense
 env = eval("common.env_lib."+env_name+"sense"+"()")
 env.set_pref(pref) # preference over actions
@@ -167,7 +167,7 @@ prediction_horizon = 10*timeslots_per_day
 henergy_mean= 0.13904705134356052 # 10yr hmean for tokyo
 
 exp_test_log = {} # dictionary to store test results
-
+intrp_no =4
 for env_location in env_location_list:
 #     print(env_location)
     exp_test_log[env_location] = {}
@@ -181,7 +181,7 @@ for env_location in env_location_list:
         state = env.reset()
         reward_rec = []
         
-        intrp_dc_rec = []
+        intrp_actions_rec = []
         intrp_sense_value_rec = []
         intrp_enp_value_rec = []
         intrp_final_value_rec = []
@@ -234,8 +234,8 @@ for env_location in env_location_list:
                 
                 # Execute action
                 next_state, reward, done, _ = env.step(tr_action)
-            tot_reward = env.preference*reward[0] + (1-env.preference)*reward[1]
-            reward_rec.append(tot_reward)
+
+            reward_rec.append(reward)
             ep_done = done or env.RECOVERY_MODE
             ep_done_rec.append(ep_done)
             state = next_state
@@ -253,7 +253,7 @@ for env_location in env_location_list:
         iteration_result['sense_reward_log'] = np.array(env.sense_reward_log)
         iteration_result['enp_reward_log'] = np.array(env.enp_reward_log)
         
-        iteration_result['intrp_dc_rec'] = intrp_dc_rec
+        iteration_result['intrp_actions_rec'] = intrp_actions_rec
         iteration_result['intrp_sense_value_rec'] = intrp_sense_value_rec
         iteration_result['intrp_enp_value_rec'] = intrp_enp_value_rec
         iteration_result['intrp_final_value_rec'] = intrp_final_value_rec
