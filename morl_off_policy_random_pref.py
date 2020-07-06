@@ -515,7 +515,7 @@ for env_location in env_location_list:
             state = env.reset()
             reward_rec = []
 
-            intrp_dc_rec = []
+            intrp_actions_rec = []
             intrp_sense_value_rec = []
             intrp_enp_value_rec = []
             intrp_final_value_rec = []
@@ -546,6 +546,7 @@ for env_location in env_location_list:
                     intrp_actions = np.linspace(start=min(raw_sense_action,raw_enp_action), 
                                                 stop=max(raw_sense_action,raw_enp_action), 
                                                 num=intrp_no)
+                    intrp_actions_rec.append(intrp_actions)
 
                     # Convert intrp_actions to action
                     intrp_action_tensor = torch.FloatTensor(intrp_actions).unsqueeze(1).to(device)
@@ -554,10 +555,13 @@ for env_location in env_location_list:
                     # Get the q-values from sense and enp models for the intrp_actions
                     intrp_sense_value = sense_qnet(batch_state_tensor, intrp_action_tensor).cpu().detach().numpy().squeeze()
                     intrp_enp_value = enp_qnet(batch_state_tensor, intrp_action_tensor).cpu().detach().numpy().squeeze()
-
+                    intrp_sense_value_rec.append(intrp_sense_value)
+                    intrp_enp_value_rec.append(intrp_enp_value)
+                
                     # Calculate the node utility for all intrp_actions
                     final_value = pref*intrp_sense_value + (1-pref)*intrp_enp_value
-
+                    intrp_final_value_rec.append(final_value)
+                    
                     # final_action is the action with the maximum final_value
                     final_raw_action = intrp_actions[final_value.argmax()]
                     tr_action = (final_raw_action*0.5 + 0.5)
