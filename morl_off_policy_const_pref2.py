@@ -588,7 +588,7 @@ for env_location in env_location_list:
             iteration_result['sense_reward_log'] = np.array(env.sense_reward_log)
             iteration_result['enp_reward_log'] = np.array(env.enp_reward_log)
 
-            iteration_result['intrp_dc_rec'] = intrp_dc_rec
+            iteration_result['intrp_actions_rec'] = intrp_actions_rec
             iteration_result['intrp_sense_value_rec'] = intrp_sense_value_rec
             iteration_result['intrp_enp_value_rec'] = intrp_enp_value_rec
             iteration_result['intrp_final_value_rec'] = intrp_final_value_rec
