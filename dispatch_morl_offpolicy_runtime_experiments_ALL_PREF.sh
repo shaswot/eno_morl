@@ -13,5 +13,5 @@ seed_filename=$4
 
 for pref in  0.01 0.05 0.1 
 do
-    ./dispatch_c_morl_experiments_single_PREF.sh "$1" "$2" "$3" "$pref" "$4" &
+    ./dispatch_morl_offpolicy_runtime_experiments_single_PREF.sh "$1" "$2" "$3" "$pref" "$4" &
 done
