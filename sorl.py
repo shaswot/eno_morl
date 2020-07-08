@@ -185,8 +185,8 @@ EVAL_FREQ = prediction_horizon # how often to evaluate
 for year in range(START_YEAR, START_YEAR+NO_OF_YEARS):
        
     exp_noise = ENoise(env.action_space, 
-                       max_sigma=max_noise, 
-                       min_sigma=0.01, 
+                       max_sigma=max_noise+0.001, 
+                       min_sigma=max_noise, 
                        decay_period=30*timeslots_per_day)
     
     env.set_env(env_location, year, timeslots_per_day, 
@@ -425,8 +425,8 @@ ddpg_net.eval()
 
 # Setup environment
 env_location_list = ['tokyo']#['tokyo','wakkanai','minamidaito']
-START_YEAR = 1995
-NO_OF_YEARS = 24
+START_YEAR = 2005
+NO_OF_YEARS = 10
 # timeslots_per_day = 24
 # REQ_TYPE = "random"
 # prediction_horizon = 10*timeslots_per_day
