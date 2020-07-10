@@ -105,6 +105,119 @@ def sorl_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500):
     plt.show()
 # End of sorl_plot
 ########################################################
+def task3_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAYS_TO_PLOT = 500):
+    
+    # Get Environment Log
+    ################################################################    
+
+    sense_dc_log = run_log['sense_dc_log']
+    tx_dc_log = run_log['tx_dc_log']
+
+    env_log = run_log['env_log']
+    henergy_obs_rec=env_log[:,1]
+    penergy_obs_rec=env_log[:,2]
+    benergy_obs_rec=env_log[:,3]
+    menergy_obs_rec=env_log[:,4]
+    req_obs_rec=env_log[:,5]
+    req_obs2_rec=env_log[:,6]
+
+    sense_reward_log = run_log['sense_reward_log']
+    tx_reward_log = run_log['tx_reward_log']
+    enp_reward_log = run_log['enp_reward_log']
+
+
+    NO_OF_TIMESLOTS_PER_DAY = timeslots_per_day
+    NO_OF_DATA_DAYS = int(len(henergy_obs_rec)/NO_OF_TIMESLOTS_PER_DAY)
+
+    END_DAY = min(START_DAY + NO_OF_DAYS_TO_PLOT, NO_OF_DATA_DAYS)
+
+    start_index = START_DAY*NO_OF_TIMESLOTS_PER_DAY
+    end_index = END_DAY*NO_OF_TIMESLOTS_PER_DAY
+
+    fig_width = 10
+    fig_height = fig_width / 1.618
+
+    # Draw figure
+    ##############
+    fig, axs = plt.subplots(nrows=3,
+                            ncols=1,
+                            figsize=[fig_width,fig_height],
+                            sharex=True)
+
+
+    enp_dc_ax    = axs[0]
+    sense_dc_ax  = axs[1]
+    tx_dc_ax     = axs[2]
+
+    x_axis_values = np.arange(start_index,end_index)
+    xtick_resolution = max(1,int((END_DAY-START_DAY)/10))
+
+    ###########################################################################################################
+    enp_dc_ax.plot(x_axis_values, 
+                   menergy_obs_rec[start_index:end_index], 
+                   color='tab:red', alpha=1.0,linewidth=1.0, label="batt")
+
+    enp_dc_ax.plot(x_axis_values,
+                   enp_reward_log[start_index:end_index], 
+                   color='tab:green', alpha=1.0,linewidth=1.0, label="enp_reward")
+
+    enp_dc_ax.set_ylim(0,1)
+    enp_dc_ax.grid(which='major', axis='x', linestyle='--')
+
+    enp_dc_ax.legend()
+    ###########################################################################################################
+    ###########################################################################################################
+    sense_dc_ax.plot(x_axis_values,
+                     sense_dc_log[start_index:end_index], 
+                     color='tab:blue', alpha=0.7,linewidth=2.0, label="sense_dc")
+
+    sense_dc_ax.fill_between(x_axis_values,
+                             req_obs_rec[start_index:end_index],0, 
+                             color='tab:orange',linestyle='--',linewidth=1.0, alpha=0.2, label="req_dc")
+
+    sense_reward_ax = sense_dc_ax.twinx()
+    sense_reward_ax.plot(x_axis_values,
+                         sense_reward_log[start_index:end_index],
+                         color='tab:purple', alpha=0.7,linewidth=1.0, label="sense_dc_reward")
+    sense_reward_ax.set_ylim(0.1,1.1)
+    sense_reward_ax.set_ylabel("sense_reward", color='tab:purple')
+
+    sense_dc_ax.set_ylim(0,0.5)
+    sense_dc_ax.grid(which='major', axis='x', linestyle='--')
+
+    sense_dc_ax.set_ylabel("sense_dc", color='tab:blue')
+    ###########################################################################################################
+    ###########################################################################################################
+    tx_dc_ax.plot(x_axis_values,
+                  tx_dc_log[start_index:end_index], 
+                  color='tab:green', alpha=0.7,linewidth=2.0, label="tx_dc")
+
+    tx_dc_ax.fill_between(x_axis_values,
+                          req_obs2_rec[start_index:end_index],0,
+                          color='tab:pink',linestyle='--',linewidth=1.0, alpha=0.2, label="req_dc2")
+
+    tx_reward_ax = tx_dc_ax.twinx()
+    tx_reward_ax.plot(x_axis_values,
+                      tx_reward_log[start_index:end_index],
+                      color='tab:olive', alpha=0.7,linewidth=1.0, label="tx_dc_reward")
+    tx_reward_ax.set_ylim(0.1,1.1)
+    tx_reward_ax.set_ylabel("tx_reward", color='tab:olive')
+
+    tx_dc_ax.set_ylim(0,0.5)
+    tx_dc_ax.grid(which='major', axis='x', linestyle='--')
+    tx_dc_ax.set_xlim([start_index,end_index])
+    tx_dc_ax.set_xticks(np.arange(start=start_index,
+                                    stop=end_index+1,
+                                    step=NO_OF_TIMESLOTS_PER_DAY*xtick_resolution))
+    tx_dc_ax.set_xticklabels(np.arange(start=START_DAY,
+                                           stop=END_DAY+1,
+                                           step=xtick_resolution))
+
+    tx_dc_ax.set_ylabel("tx_dc", color='tab:green')
+    plt.show()
+# End of task3_plot
+########################################################
+
 # def cnfrm_morl_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500):
     
 #    # Get Environment Log
