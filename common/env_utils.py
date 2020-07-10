@@ -105,7 +105,7 @@ def sorl_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500):
     plt.show()
 # End of sorl_plot
 ########################################################
-def task3_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500):
+def task3_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAYS_TO_PLOT = 500):
     
     # Get Environment Log
     ################################################################    
@@ -182,7 +182,7 @@ def task3_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500)
     sense_reward_ax.set_ylim(0.1,1.1)
     sense_reward_ax.set_ylabel("sense_reward", color='tab:purple')
 
-    sense_dc_ax.set_ylim(0.08,0.5)
+    sense_dc_ax.set_ylim(0,0.5)
     sense_dc_ax.grid(which='major', axis='x', linestyle='--')
 
     sense_dc_ax.set_ylabel("sense_dc", color='tab:blue')
@@ -203,7 +203,7 @@ def task3_plot(run_log, timeslots_per_day, START_DAY=0, NO_OF_DAY_TO_PLOT = 500)
     tx_reward_ax.set_ylim(0.1,1.1)
     tx_reward_ax.set_ylabel("tx_reward", color='tab:olive')
 
-    tx_dc_ax.set_ylim(0.08,0.5)
+    tx_dc_ax.set_ylim(0,0.5)
     tx_dc_ax.grid(which='major', axis='x', linestyle='--')
     tx_dc_ax.set_xlim([start_index,end_index])
     tx_dc_ax.set_xticks(np.arange(start=start_index,

@@ -8,10 +8,10 @@ from common.env_utils import battery, tx_prob
 
 from collections import deque
 
-def tx_rewardfn(x,k=-0.4):
+def tx_rewardfn(x,k=-0.8):
     x = (x-0.1)/0.9
     y = (x-k*x)/(k-2*k*np.abs(x)+1)
-    kreward = y*0.9 +0.1
+    kreward = y*0.7 +0.1
     return kreward
 
 
