@@ -445,6 +445,8 @@ for env_location in env_location_list:
                     p_horizon=prediction_horizon,
                     hmean=henergy_mean)    
         state = env.reset()
+        env.BEFF = 0.5 # Battery is 50 % efficient
+
         reward_rec = []
         ep_done_rec = []
         done = False
