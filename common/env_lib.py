@@ -556,6 +556,27 @@ class cenp(csense):
 ########################################################
 # End of cenp()
 ########################################################
+class cenp_strict(csense):
+    
+    def reward(self,action): # reward for batt violation
+            if action < 0:
+                sense_reward = 0
+                enp_reward = 0
+                reward = 0
+
+            else:
+                sense_dc = self.action2sensedc(action)
+                sense_reward = min(1.0,sense_dc/self.req_obs)
+
+                enp_reward = 1
+                
+            reward = enp_reward
+            self.sense_reward_log.append(sense_reward)
+            self.enp_reward_log.append(enp_reward)
+            return reward
+########################################################
+# End of cenp_strict()
+########################################################
 class cenpv2(csense):
     
     def reward(self,action): # reward based on utility
