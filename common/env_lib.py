@@ -568,7 +568,7 @@ class cenp_strict(csense):
                 sense_dc = self.action2sensedc(action)
                 sense_reward = min(1.0,sense_dc/self.req_obs)
 
-                enp_reward = 1
+                enp_reward = 1 # +1 reward iff no violation.
                 
             reward = enp_reward
             self.sense_reward_log.append(sense_reward)
