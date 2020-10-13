@@ -17,7 +17,7 @@ echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
     ## reading each line
-    log_filename=$1sensev2-g$2-n$3-p$4-$line
+    log_filename=$1_t24_random-morl_runtimev3-g$2-n$3-p$4-$line
     echo "$log_filename"
-    python ./c_morlv2.py --env="$1" --gamma="$2" --noise="$3" --pref="$4" --seed="$line"  >> logfiles/"$log_filename" 2>&1 ;  
+    python ./c_morlv3.py --env="$1" --gamma="$2" --noise="$3" --pref="$4" --seed="$line"  >> logfiles/"$log_filename" 2>&1 ;  
 done < "$seed_filename"

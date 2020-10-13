@@ -77,7 +77,7 @@ device   = torch.device("cuda" if use_cuda else "cpu")
 # In[6]:
 ################################################################################
 # Setting up environment base
-experiment = "base_g"+str(GAMMA)+"-n"+str(max_noise)
+experiment = "bad_batt_g"+str(GAMMA)+"-n"+str(max_noise)
 # env_name = "csense"
 env = eval("common.env_lib."+env_name+"()")
 

@@ -11,7 +11,7 @@ gamma=$2
 noise=$3
 seed_filename=$4
 
-for pref in  0.1 0.2 0.5 0.8
+for pref in  0.2 0.5 0.8
 do
-    ./dispatch_c_morl_experiments_single_PREF.sh "$1" "$2" "$3" "$pref" "$4" &
+    ./dispatch_morl_off_policy_const_pref3_diff_gamma_experiments_SINGLE_PREF.sh "$1" "$2" "$3" "$pref" "$4" &
 done

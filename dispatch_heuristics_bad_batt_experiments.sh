@@ -2,23 +2,26 @@
 
 ## USAGE
 ## Run each experiment with seeds specified seedfile
-# ./dispatch_sorl_experiments.sh <environment> <gamma> <noise> <seed_file>
-# ./dispatch_sorl_experiments.sh rsense 0.997 0.7 seedlist.dat
+# ./dispatch_heuristics_experiments.sh <environment> <seed_file>
+# ./dispatch_heuristics_experiments.sh csense seedlist.dat
 mkdir -p logfiles
 
 env=$1
-gamma=$2
-noise=$3
-seed_filename=$4
+seed_filename=$2
 
 # get file with the list of seeds
 echo "Seedfile = $seed_filename"
 while IFS= read -r line
 do
-    ## reading each line
-    log_filename=$1-bad_batt_g$2-n$3-$line
+    # Naive-heuristics
+    log_filename=$1-k_bad_batt-$line
+    python ./k_heuristics_bad_batt.py --env="$1" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+
+#     # K-heuristics
+#     log_filename=$1-k-$line
+#     python ./k_heuristics.py --env="$1" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
+    
     echo "$log_filename"
-    python ./sorl_bad_batt.py --env="$1" --gamma="$2" --noise="$3" --seed="$line"  >> logfiles/"$log_filename" 2>&1 &
 
 #    
 # 2>&1: Redirect stderr to "where stdout is currently going". 
